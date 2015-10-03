@@ -29,6 +29,26 @@ test('import: dat import csv', function (t) {
   st.end()
 })
 
+test('import: dat import csv with deletion', function (t) {
+  var csv = path.resolve(__dirname + '/fixtures/all_hour2.csv')
+  var st = spawn(t, dat + ' import ' + csv + ' --key=id --dataset=import-test1', {cwd: dat1})
+  st.stdout.empty()
+  st.stderr.match(/Done importing data/)
+  st.end()
+})
+
+test('import: dat import csv deleted key doesnt appear', function (t) {
+  var st = spawn(t, dat + ' keys --dataset=import-test1', {cwd: dat1})
+
+  var output = ''
+  st.stdout.match(function (line) {
+    output += line
+    if (!line) t.true(output.indexOf('ak11246291') === -1, 'deleted key should not appear')
+  })
+  st.stderr.empty()
+  st.end()
+})
+
 verify('import-test1', dat1)
 
 helpers.onedat(dat2)
